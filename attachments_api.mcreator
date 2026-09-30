@@ -1,0 +1,216 @@
+{
+  "mod_elements": [
+    {
+      "name": "RegisterAttachmentsEvent",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "register_attachments_event",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/RegisterAttachmentsEvent.java"
+        ]
+      }
+    },
+    {
+      "name": "AttachmentType",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "attachment_type",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/AttachmentType.java"
+        ]
+      }
+    },
+    {
+      "name": "AttachmentHolder",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "attachment_holder",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/AttachmentHolder.java"
+        ]
+      }
+    },
+    {
+      "name": "UpdateAttachmentEvent",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "update_attachment_event",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/UpdateAttachmentEvent.java"
+        ]
+      }
+    },
+    {
+      "name": "ChangeAttachmentEvent",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "change_attachment_event",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/ChangeAttachmentEvent.java"
+        ]
+      }
+    },
+    {
+      "name": "ClientboundSyncAttachmentPacket",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "clientbound_sync_attachment_packet",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/ClientboundSyncAttachmentPacket.java"
+        ]
+      }
+    },
+    {
+      "name": "AttachmentTypeCache",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "attachment_type_cache",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/AttachmentTypeCache.java"
+        ]
+      }
+    },
+    {
+      "name": "ServerboundSyncAttachmentPacket",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "serverbound_sync_attachment_packet",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/ServerboundSyncAttachmentPacket.java"
+        ]
+      }
+    },
+    {
+      "name": "EntityMixin",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "entity_mixin",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/EntityMixin.java"
+        ]
+      }
+    },
+    {
+      "name": "Events",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "events",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/Events.java"
+        ]
+      }
+    },
+    {
+      "name": "AttachmentEntry",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "attachment_entry",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/AttachmentEntry.java"
+        ]
+      }
+    },
+    {
+      "name": "ServerboundResetAttachmentPacket",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "serverbound_reset_attachment_packet",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/ServerboundResetAttachmentPacket.java"
+        ]
+      }
+    },
+    {
+      "name": "ClientboundResetAttachmentPacket",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "clientbound_reset_attachment_packet",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/ClientboundResetAttachmentPacket.java"
+        ]
+      }
+    },
+    {
+      "name": "Authority",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "authority",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/Authority.java"
+        ]
+      }
+    }
+  ],
+  "variable_elements": [],
+  "sound_elements": [],
+  "tag_elements": {},
+  "tab_element_order": {},
+  "language_map": {
+    "en_us": {
+      "api.attachments.command.fail.invalid": "%s is not an attachment holder",
+      "api.attachments.command.fail.set": "Unable to change %s to %s for %s",
+      "api.attachments.command.success.set": "Changed %s to %s for %s",
+      "api.attachments.command.fail.reset": "Unable to reset %s for %s",
+      "api.attachments.command.success.reset": "Reset %s for %s",
+      "api.attachments.command.success.get": "%s has a value of %s for %s"
+    }
+  },
+  "metadata": {
+    "files": [
+      "src/main/resources/pack.mcmeta",
+      "src/main/java/sxs/api/attachments/AttachmentsApiMod.java",
+      "src/main/resources/META-INF/neoforge.mods.toml"
+    ]
+  },
+  "foldersRoot": {
+    "name": "~",
+    "children": []
+  },
+  "workspaceSettings": {
+    "modid": "attachments_api",
+    "modName": "AttachmentsAPI",
+    "version": "1.0.0",
+    "description": "Allows registration of saved, synched custom data on any entity using a simple event, attachments can also be setup to allow changing from only serverside or only clientside but by default can be set by client or server",
+    "author": "Spiderman31807",
+    "websiteURL": "www.curseforge.com/minecraft/mc-mods/attachments-api",
+    "license": "GNU General Public License version 3 (GPLv3)",
+    "serverSideOnly": false,
+    "modPicture": "sxs",
+    "requiredMods": [],
+    "dependencies": [],
+    "dependants": [],
+    "mcreatorDependencies": [],
+    "currentGenerator": "neoforge-1.21.8",
+    "credits": "Spiderman31807",
+    "modElementsPackage": "sxs.api.attachments"
+  },
+  "mcreatorVersion": 202600233518
+}

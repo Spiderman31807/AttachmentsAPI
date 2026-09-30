@@ -1,0 +1,42 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="GNU General Public License version 3 (GPLv3)"
+
+[[mods]]
+modId="attachments_api"
+version="1.0.0"
+displayName="AttachmentsAPI"
+displayURL="https://mcreator.net"
+logoFile="logo.png"
+credits="Spiderman31807"
+authors="Spiderman31807"
+description="Allows registration of saved, synched custom data on any entity using a simple event, attachments can also be setup to allow changing from only serverside or only clientside but by default can be set by client or server"
+
+# Start of user code block mod configuration
+# End of user code block mod configuration
+
+
+# Start of user code block custom mixins
+[[mixins]]
+config="mixin.attachments.api.json"
+# End of user code block custom mixins
+
+[[dependencies.attachments_api]]
+modId="neoforge"
+type="required"
+versionRange="[21.8.31,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.attachments_api]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.8]"
+ordering="AFTER"
+side="BOTH"
+
+
+
+
+# Start of user code block dependencies configuration
+# End of user code block dependencies configuration

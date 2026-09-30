@@ -1,0 +1,6 @@
+{
+  "pack": {
+    "pack_format": 81,
+    "description": "Allows registration of saved, synched custom data on any entity using a simple event, attachments can also be setup to allow changing from only serverside or only clientside but by default can be set by client or server"
+  }
+}

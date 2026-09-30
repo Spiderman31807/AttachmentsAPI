@@ -1,0 +1,8 @@
+{
+  "api.attachments.command.fail.invalid": "%s is not an attachment holder",
+  "api.attachments.command.fail.set": "Unable to change %s to %s for %s",
+  "api.attachments.command.success.set": "Changed %s to %s for %s",
+  "api.attachments.command.fail.reset": "Unable to reset %s for %s",
+  "api.attachments.command.success.reset": "Reset %s for %s",
+  "api.attachments.command.success.get": "%s has a value of %s for %s"
+}
