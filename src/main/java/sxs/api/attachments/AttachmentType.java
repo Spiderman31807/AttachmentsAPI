@@ -12,7 +12,7 @@ import com.mojang.serialization.Codec;
 
 public record AttachmentType<T>(ResourceLocation id, Supplier<T> defaultSupplier, Codec<T> serializer, StreamCodec<? extends ByteBuf, T> sync, Authority syncAuthority, boolean copyOnDeath) {
 	public void update(AttachmentHolder holder, Object value) {
-		holder.<T>onAttachmentUpdated(holder.<T>getAttachmentEntry(this.id), (T) value);
+		holder.<T, T>onAttachmentUpdated(holder.<T, T>getAttachmentEntry(this.id), (T) value);
 	}
 
 	public T decode(RegistryFriendlyByteBuf buf) {

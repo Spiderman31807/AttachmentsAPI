@@ -20,10 +20,10 @@ import java.util.HashSet;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements AttachmentHolder {
 	@Unique
-	private Set<AttachmentEntry<?>> attachments;
+	private Set<AttachmentEntry<?, ?>> attachments;
 
 	@Override
-	public Set<AttachmentEntry<?>> getAttachments() {
+	public Set<AttachmentEntry<?, ?>> getAttachments() {
 		if (this.attachments == null)
 			this.attachments = new HashSet();
 		return this.attachments;
@@ -46,7 +46,7 @@ public abstract class EntityMixin implements AttachmentHolder {
 	private void load(ValueInput input, CallbackInfo callback) {
 		input.child("attachments").ifPresent((attachmentsInput) -> {
 			for (String id : attachmentsInput.keySet()) {
-				AttachmentEntry<?> entry = this.getAttachmentEntry(ResourceLocation.parse(id));
+				AttachmentEntry<?, ?> entry = this.getAttachmentEntry(ResourceLocation.parse(id));
 				if(entry != null)
 					entry.load(attachmentsInput);
 			}

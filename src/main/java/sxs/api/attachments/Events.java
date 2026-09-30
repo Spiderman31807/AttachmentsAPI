@@ -107,7 +107,7 @@ public class Events {
 			Entity entity = EntityArgument.getEntity(context, "target");
 			if (entity instanceof AttachmentHolder holder) {
 				StringBuilder builder = new StringBuilder();
-				for(AttachmentEntry<?> entry : holder.getAttachments()) {
+				for(AttachmentEntry<?, ?> entry : holder.getAttachments()) {
 					builder.append('\n');
 					builder.append(" - [");
 					builder.append(entry.getStoredClass().getSimpleName());

@@ -10,21 +10,21 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import java.util.Optional;
 import io.netty.buffer.ByteBuf;
 
-public class AttachmentEntry<T> {
-	public static final StreamCodec<RegistryFriendlyByteBuf, AttachmentEntry<?>> STREAM_CODEC = new StreamCodec<>() {
+public class AttachmentEntry<C, T extends C> {
+	public static final StreamCodec<RegistryFriendlyByteBuf, AttachmentEntry<?, ?>> STREAM_CODEC = new StreamCodec<>() {
 		@Override
-		public void encode(RegistryFriendlyByteBuf buf, AttachmentEntry<?> value) {
+		public void encode(RegistryFriendlyByteBuf buf, AttachmentEntry<?, ?> value) {
 			ResourceLocation.STREAM_CODEC.encode(buf, value.getId());
 			ByteBufCodecs.STRING_UTF8.encode(buf, value.storedClassType.getName());
 			value.encode(buf);
 		}
 
 		@Override
-		public AttachmentEntry<?> decode(RegistryFriendlyByteBuf buf) {
+		public AttachmentEntry<?, ?> decode(RegistryFriendlyByteBuf buf) {
 			try {
 				AttachmentType type = AttachmentTypeCache.lookup(ResourceLocation.STREAM_CODEC.decode(buf));
 				Class<?> clazz = Class.forName(ByteBufCodecs.STRING_UTF8.decode(buf));
-				AttachmentEntry<?> entry = new AttachmentEntry(clazz, type);
+				AttachmentEntry<?, ?> entry = new AttachmentEntry(clazz, type);
 				entry.decode(buf);
 				return entry;
 			} catch (ClassNotFoundException e) { e.printStackTrace(); }
@@ -35,10 +35,10 @@ public class AttachmentEntry<T> {
 	private final StreamCodec<? extends ByteBuf, Optional<T>> streamCodec;
 	private final ResourceLocation location;
 	private final AttachmentType<T> attachment;
-	private final Class<T> storedClassType;
+	private final Class<C> storedClassType;
 	private Optional<T> value = Optional.empty();
 
-	public AttachmentEntry(Class<T> storedClassType, AttachmentType<T> attachment) {
+	public AttachmentEntry(Class<C> storedClassType, AttachmentType<T> attachment) {
 		this.storedClassType = storedClassType;
 		this.streamCodec = attachment.sync() == null ? null : ByteBufCodecs.optional(attachment.sync());
 		this.location = attachment.id();
@@ -57,7 +57,7 @@ public class AttachmentEntry<T> {
 		return this.value.isPresent();
 	}
 
-	public Class<T> getStoredClass() {
+	public Class<C> getStoredClass() {
 		return storedClassType;
 	}
 
@@ -73,12 +73,9 @@ public class AttachmentEntry<T> {
 		this.value = Optional.empty();
 	}
 
-	public void copyValue(AttachmentEntry<?> entry) {
-		try {
-			this.value = ((AttachmentEntry<T>) entry).value;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void copyValue(AttachmentEntry<?, ?> entry) {
+		try { this.value = ((AttachmentEntry<C, T>) entry).value; }
+		catch (Exception e) { e.printStackTrace(); }
 	}
 
 	public void setValue(Optional<T> value) {

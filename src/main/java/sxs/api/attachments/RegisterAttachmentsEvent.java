@@ -52,16 +52,16 @@ public class RegisterAttachmentsEvent extends Event {
 	}
 
 	// Direct Registration
-	public <T> boolean register(Class<T> clazz, AttachmentType<T> attachment) {
+	public <C, T extends C> boolean register(Class<C> clazz, AttachmentType<T> attachment) {
 		return holder.register(clazz, attachment);
 	}
 
-	public <T> boolean register(Class<T> clazz, AttachmentType.Builder<T> builder) {
+	public <C, T extends C> boolean register(Class<C> clazz, AttachmentType.Builder<T> builder) {
 		return this.register(clazz, builder.build());
 	}
 
 	// Raw Registration
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, Authority authority, boolean copyOnDeath) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, Authority authority, boolean copyOnDeath) {
 		try {
 			AttachmentType.Builder<T> builder = new AttachmentType.Builder<T>(location, defaultSupplier);
 			if (codec != null) {
@@ -82,67 +82,67 @@ public class RegisterAttachmentsEvent extends Event {
 		return false;
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, boolean copyOnDeath) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, boolean copyOnDeath) {
 		return this.register(targetClass, location, defaultSupplier, codec, streamCodec, Authority.SHARED, copyOnDeath);
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, Authority authority) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, Authority authority) {
 		return this.register(targetClass, location, defaultSupplier, codec, streamCodec, authority, true);
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec) {
 		return this.register(targetClass, location, defaultSupplier, codec, streamCodec, Authority.SHARED, true);
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, boolean copyOnDeath) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, boolean copyOnDeath) {
 		return this.register(targetClass, location, defaultSupplier, (Codec<T>) null, (StreamCodec<? extends ByteBuf, T>) null, Authority.SHARED, copyOnDeath);
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Authority authority) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Authority authority) {
 		return this.register(targetClass, location, defaultSupplier, (Codec<T>) null, (StreamCodec<? extends ByteBuf, T>) null, authority, true);
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier) {
 		return this.register(targetClass, location, defaultSupplier, (Codec<T>) null, (StreamCodec<? extends ByteBuf, T>) null, Authority.SHARED, true);
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, boolean copyOnDeath) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, boolean copyOnDeath) {
 		return this.register(targetClass, location, defaultSupplier, codec, (StreamCodec<? extends ByteBuf, T>) null, Authority.SHARED, copyOnDeath);
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, Authority authority) {
+	public <C, T extends C> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, Authority authority) {
 		return this.register(targetClass, location, defaultSupplier, codec, (StreamCodec<? extends ByteBuf, T>) null, authority, true);
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec) {
 		return this.register(targetClass, location, defaultSupplier, codec, (StreamCodec<? extends ByteBuf, T>) null, Authority.SHARED, true);
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, StreamCodec<? extends ByteBuf, T> streamCodec, boolean copyOnDeath) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, StreamCodec<? extends ByteBuf, T> streamCodec, boolean copyOnDeath) {
 		return this.register(targetClass, location, defaultSupplier, (Codec<T>) null, streamCodec, Authority.SHARED, copyOnDeath);
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, StreamCodec<? extends ByteBuf, T> streamCodec, Authority authority) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, StreamCodec<? extends ByteBuf, T> streamCodec, Authority authority) {
 		return this.register(targetClass, location, defaultSupplier, (Codec<T>) null, streamCodec, authority, true);
 	}
 
-	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, StreamCodec<? extends ByteBuf, T> streamCodec) {
+	public <C, T extends C> boolean register(Class<C> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, StreamCodec<? extends ByteBuf, T> streamCodec) {
 		return this.register(targetClass, location, defaultSupplier, (Codec<T>) null, streamCodec, Authority.SHARED, true);
 	}
 
-	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, Authority authority, boolean copyOnDeath) {
+	public <C, T extends C> boolean register(Class<C> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, Authority authority, boolean copyOnDeath) {
 		return this.register(targetClass, ResourceLocation.fromNamespaceAndPath(namespace, id), defaultSupplier, codec, streamCodec, authority, copyOnDeath);
 	}
 
-	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, boolean copyOnDeath) {
+	public <C, T extends C> boolean register(Class<C> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, boolean copyOnDeath) {
 		return this.register(targetClass, namespace, id, defaultSupplier, codec, streamCodec, Authority.SHARED, copyOnDeath);
 	}
 
-	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, Authority authority) {
+	public <C, T extends C> boolean register(Class<C> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec, Authority authority) {
 		return this.register(targetClass, namespace, id, defaultSupplier, codec, streamCodec, authority, true);
 	}
 
-	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec) {
+	public <C, T extends C> boolean register(Class<C> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<? extends ByteBuf, T> streamCodec) {
 		return this.register(targetClass, namespace, id, defaultSupplier, codec, streamCodec, Authority.SHARED, true);
 	}
 
