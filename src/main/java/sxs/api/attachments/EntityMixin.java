@@ -47,7 +47,8 @@ public abstract class EntityMixin implements AttachmentHolder {
 		input.child("attachments").ifPresent((attachmentsInput) -> {
 			for (String id : attachmentsInput.keySet()) {
 				AttachmentEntry<?> entry = this.getAttachmentEntry(ResourceLocation.parse(id));
-				entry.load(attachmentsInput);
+				if(entry != null)
+					entry.load(attachmentsInput);
 			}
 		});
 	}

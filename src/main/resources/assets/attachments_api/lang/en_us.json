@@ -4,5 +4,7 @@
   "api.attachments.command.success.set": "Changed %s to %s for %s",
   "api.attachments.command.fail.reset": "Unable to reset %s for %s",
   "api.attachments.command.success.reset": "Reset %s for %s",
-  "api.attachments.command.success.get": "%s has a value of %s for %s"
+  "api.attachments.command.success.get": "%s has a value of %s for %s",
+  "api.attachments.command.fail.get": "Unable to get the value of %s for %s",
+  "api.attachments.command.success.list": "%s has the following attachments;%s"
 }

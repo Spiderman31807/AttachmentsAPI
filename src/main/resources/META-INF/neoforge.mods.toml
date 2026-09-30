@@ -4,9 +4,9 @@ license="GNU General Public License version 3 (GPLv3)"
 
 [[mods]]
 modId="attachments_api"
-version="1.0.0"
+version="1.0.1"
 displayName="AttachmentsAPI"
-displayURL="https://mcreator.net"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/attachments-api"
 logoFile="logo.png"
 credits="Spiderman31807"
 authors="Spiderman31807"

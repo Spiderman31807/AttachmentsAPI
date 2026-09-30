@@ -167,6 +167,54 @@
           "src/main/java/sxs/api/attachments/Authority.java"
         ]
       }
+    },
+    {
+      "name": "ClientboundAttachmentsPacket",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "clientbound_attachments_packet",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/ClientboundAttachmentsPacket.java"
+        ]
+      }
+    },
+    {
+      "name": "Attachments",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "attachments",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/Attachments.java"
+        ]
+      }
+    },
+    {
+      "name": "AttachmentRegistrationType",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "attachment_registration_type",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/AttachmentRegistrationType.java"
+        ]
+      }
+    },
+    {
+      "name": "RegisterAttachmentTypesEvent",
+      "type": "code",
+      "compiles": true,
+      "locked_code": true,
+      "registry_name": "register_attachment_types_event",
+      "metadata": {
+        "files": [
+          "src/main/java/sxs/api/attachments/RegisterAttachmentTypesEvent.java"
+        ]
+      }
     }
   ],
   "variable_elements": [],
@@ -180,7 +228,9 @@
       "api.attachments.command.success.set": "Changed %s to %s for %s",
       "api.attachments.command.fail.reset": "Unable to reset %s for %s",
       "api.attachments.command.success.reset": "Reset %s for %s",
-      "api.attachments.command.success.get": "%s has a value of %s for %s"
+      "api.attachments.command.success.get": "%s has a value of %s for %s",
+      "api.attachments.command.fail.get": "Unable to get the value of %s for %s",
+      "api.attachments.command.success.list": "%s has the following attachments;%s"
     }
   },
   "metadata": {
@@ -197,10 +247,10 @@
   "workspaceSettings": {
     "modid": "attachments_api",
     "modName": "AttachmentsAPI",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Allows registration of saved, synched custom data on any entity using a simple event, attachments can also be setup to allow changing from only serverside or only clientside but by default can be set by client or server",
     "author": "Spiderman31807",
-    "websiteURL": "www.curseforge.com/minecraft/mc-mods/attachments-api",
+    "websiteURL": "https://www.curseforge.com/minecraft/mc-mods/attachments-api",
     "license": "GNU General Public License version 3 (GPLv3)",
     "serverSideOnly": false,
     "modPicture": "sxs",

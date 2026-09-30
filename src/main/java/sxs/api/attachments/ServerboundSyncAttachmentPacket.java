@@ -26,7 +26,7 @@ public record ServerboundSyncAttachmentPacket(int entityId, AttachmentType<?> at
 		RegistryFriendlyByteBuf registryBuffer = RegistryFriendlyByteBuf.decorator(ServerLifecycleHooks.getCurrentServer().registryAccess()).apply(buffer);
 		int entityId = registryBuffer.readInt();
 		AttachmentType<?> attachment = AttachmentTypeCache.lookup(ResourceLocation.STREAM_CODEC.decode(registryBuffer));
-		Object value = attachment.sync().decode(registryBuffer);
+		Object value = attachment.decode(registryBuffer);
 		return new ServerboundSyncAttachmentPacket(entityId, attachment, value);
 	});
 

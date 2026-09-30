@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.stream.Collectors;
 import java.util.Set;
+import java.util.Optional;
 
 public interface AttachmentHolder {
 	static Logger logger = LoggerFactory.getLogger(AttachmentHolder.class);
@@ -21,6 +22,23 @@ public interface AttachmentHolder {
 
 	default Set<AttachmentEntry<?>> getAttachments(Class<?> storedClass) {
 		return this.getAttachments().stream().filter(entry -> entry.getStoredClass() == storedClass).collect(Collectors.toSet());
+	}
+
+	default Set<AttachmentEntry<?>> getSyncableAttachments() {
+		return this.getAttachments().stream().filter(entry -> entry.get().sync() != null).collect(Collectors.toSet());
+	}
+
+	default void syncWith(Set<AttachmentEntry<?>> entries) {
+		for(AttachmentEntry<?> entry : entries) {
+			this.setAttachmentValue(entry.getId(), entry.getValue());
+		}
+	}
+
+	default void copyFrom(AttachmentHolder holder, boolean wasDeath) {
+		for(AttachmentEntry<?> entry : this.getAttachments()) {
+			if(!wasDeath || entry.get().copyOnDeath())
+				entry.copyValue(holder.getAttachmentEntry(entry.getId()));
+		}
 	}
 
 	default boolean hasAttachmentEntry(ResourceLocation location) {
@@ -32,6 +50,7 @@ public interface AttachmentHolder {
 			if (entry.getId().equals(location))
 				return (AttachmentEntry<T>) entry;
 		}
+		
 		return null;
 	}
 
@@ -39,11 +58,11 @@ public interface AttachmentHolder {
 		NeoForge.EVENT_BUS.post(new RegisterAttachmentsEvent(this));
 	}
 
-	default boolean register(AttachmentType<?> attachment) {
+	default <T> boolean register(Class<T> clazz, AttachmentType<T> attachment) {
 		if(this.hasAttachmentEntry(attachment.id()))
 			return false;
 		
-		if(!this.getAttachments().add(new AttachmentEntry(attachment)))
+		if(!this.getAttachments().add(new AttachmentEntry(clazz, attachment)))
 			return false;
 
 		AttachmentTypeCache.cache(attachment);
@@ -60,7 +79,7 @@ public interface AttachmentHolder {
 			return false;
 			
 		T oldValue = entry.getValue();
-		if(newValue.equals(oldValue))
+		if(newValue != null && newValue.equals(oldValue))
 			return false;
 		
 		NeoForge.EVENT_BUS.post(new UpdateAttachmentEvent.Pre<T>(this, entry.get(), oldValue, newValue));
@@ -77,6 +96,11 @@ public interface AttachmentHolder {
 		try { return this.getAttachmentValue(location); }
 		catch (Exception e) { e.printStackTrace(); }
 		return fallback;
+	}
+
+	default <T> Optional<T> tryGetAttachmentValue(ResourceLocation location) {
+		AttachmentEntry<T> entry = this.<T>getAttachmentEntry(location);
+		return entry == null ? Optional.empty() : Optional.of(entry.getValue());
 	}
 
 	default <T> T getAttachmentValue(ResourceLocation location) throws Exception {

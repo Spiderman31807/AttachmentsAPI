@@ -2,17 +2,31 @@ package sxs.api.attachments;
 
 import net.neoforged.bus.api.Event;
 
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.entity.npc.VillagerData;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.chat.Component;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 
-import java.util.stream.LongStream;
-import java.util.stream.IntStream;
 import java.util.function.Supplier;
-
-import java.nio.ByteBuffer;
+import java.util.UUID;
+import java.util.Map;
 
 import io.netty.buffer.ByteBuf;
 
@@ -25,6 +39,10 @@ public class RegisterAttachmentsEvent extends Event {
 		this.holder = holder;
 	}
 
+	public Entity getEntity() {
+		return (Entity) this.holder;
+	}
+
 	public EntityType getType() {
 		return this.holder instanceof Entity entity ? entity.getType() : null;
 	}
@@ -33,180 +51,128 @@ public class RegisterAttachmentsEvent extends Event {
 		return type.equals(this.getType());
 	}
 
-	public ResourceLocation register(AttachmentType<?> attachment) {
-		return holder.register(attachment) ? attachment.id() : null;
+	// Direct Registration
+	public <T> boolean register(Class<T> clazz, AttachmentType<T> attachment) {
+		return holder.register(clazz, attachment);
 	}
 
-	public ResourceLocation register(AttachmentType.Builder<?> builder) {
-		return this.register(builder.build());
+	public <T> boolean register(Class<T> clazz, AttachmentType.Builder<T> builder) {
+		return this.register(clazz, builder.build());
 	}
 
-	public <T> ResourceLocation register(String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec, Authority authority, boolean copyOnDeath) {
+	// Raw Registration
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec, Authority authority, boolean copyOnDeath) {
 		try {
-			AttachmentType.Builder<T> builder = new AttachmentType.Builder<T>(namespace, id, defaultSupplier);
+			AttachmentType.Builder<T> builder = new AttachmentType.Builder<T>(location, defaultSupplier);
 			if (codec != null) {
 				builder.serializable(codec);
-				if (copyOnDeath)
-					builder.copyOnDeath();
 			}
-
+			if (copyOnDeath)
+				builder.copyOnDeath();
 			if (streamCodec != null) {
 				builder.sync(streamCodec);
 				builder.authority(authority);
 			}
 
-			return this.register(builder);
+			return this.register(targetClass, builder);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+
+		return false;
 	}
 
-	public <T> ResourceLocation register(String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec, boolean copyOnDeath) {
-		return this.register(namespace, id, defaultSupplier, codec, streamCodec, Authority.SHARED, copyOnDeath);
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec, boolean copyOnDeath) {
+		return this.register(targetClass, location, defaultSupplier, codec, streamCodec, Authority.SHARED, copyOnDeath);
 	}
 
-	public <T> ResourceLocation register(String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec, Authority authority) {
-		return this.register(namespace, id, defaultSupplier, codec, streamCodec, authority, true);
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec, Authority authority) {
+		return this.register(targetClass, location, defaultSupplier, codec, streamCodec, authority, true);
 	}
 
-	public <T> ResourceLocation register(String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec) {
-		return this.register(namespace, id, defaultSupplier, codec, streamCodec, Authority.SHARED, true);
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec) {
+		return this.register(targetClass, location, defaultSupplier, codec, streamCodec, Authority.SHARED, true);
 	}
 
-	// BOOL
-	public ResourceLocation registerBoolean(String namespace, String id, Supplier<Boolean> defaultSupplier, boolean serializable, boolean sync, Authority authority, boolean copyOnDeath) {
-		return this.register(namespace, id, defaultSupplier, serializable ? Codec.BOOL : null, sync ? ByteBufCodecs.BOOL : null, authority, copyOnDeath);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec, Authority authority, boolean copyOnDeath) {
+		return this.register(targetClass, ResourceLocation.fromNamespaceAndPath(namespace, id), defaultSupplier, codec, streamCodec, authority, copyOnDeath);
 	}
 
-	public ResourceLocation registerBoolean(String namespace, String id, Supplier<Boolean> defaultSupplier, boolean serializable, boolean sync, boolean copyOnDeath) {
-		return this.registerBoolean(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, copyOnDeath);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec, boolean copyOnDeath) {
+		return this.register(targetClass, namespace, id, defaultSupplier, codec, streamCodec, Authority.SHARED, copyOnDeath);
 	}
 
-	public ResourceLocation registerBoolean(String namespace, String id, Supplier<Boolean> defaultSupplier, boolean serializable, boolean sync, Authority authority) {
-		return this.registerBoolean(namespace, id, defaultSupplier, serializable, sync, authority, true);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec, Authority authority) {
+		return this.register(targetClass, namespace, id, defaultSupplier, codec, streamCodec, authority, true);
 	}
 
-	public ResourceLocation registerBoolean(String namespace, String id, Supplier<Boolean> defaultSupplier, boolean serializable, boolean sync) {
-		return this.registerBoolean(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, true);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec) {
+		return this.register(targetClass, namespace, id, defaultSupplier, codec, streamCodec, Authority.SHARED, true);
 	}
 
-	// BYTE
-	public ResourceLocation registerByte(String namespace, String id, Supplier<Byte> defaultSupplier, boolean serializable, boolean sync, Authority authority, boolean copyOnDeath) {
-		return this.register(namespace, id, defaultSupplier, serializable ? Codec.BYTE : null, sync ? ByteBufCodecs.BYTE : null, authority, copyOnDeath);
+	// Supported Registration Types
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, boolean serializable, boolean syncable, Authority authority, boolean copyOnDeath) {
+		AttachmentRegistrationType<T> type = AttachmentRegistrationType.getRegistrationFor(targetClass);
+		return type == null ? false : type.register(this, location, defaultSupplier, serializable, syncable, authority, copyOnDeath);
 	}
 
-	public ResourceLocation registerByte(String namespace, String id, Supplier<Byte> defaultSupplier, boolean serializable, boolean sync, boolean copyOnDeath) {
-		return this.registerByte(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, copyOnDeath);
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, boolean serializable, boolean syncable, boolean copyOnDeath) {
+		return this.register(targetClass, location, defaultSupplier, serializable, syncable, Authority.SHARED, copyOnDeath);
 	}
 
-	public ResourceLocation registerByte(String namespace, String id, Supplier<Byte> defaultSupplier, boolean serializable, boolean sync, Authority authority) {
-		return this.registerByte(namespace, id, defaultSupplier, serializable, sync, authority, true);
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, boolean serializable, boolean syncable, Authority authority) {
+		return this.register(targetClass, location, defaultSupplier, serializable, syncable, authority, true);
 	}
 
-	public ResourceLocation registerByte(String namespace, String id, Supplier<Byte> defaultSupplier, boolean serializable, boolean sync) {
-		return this.registerByte(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, true);
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, Supplier<T> defaultSupplier, boolean serializable, boolean syncable) {
+		return this.register(targetClass, location, defaultSupplier, serializable, syncable, Authority.SHARED, true);
 	}
 
-	// SHORT
-	public ResourceLocation registerShort(String namespace, String id, Supplier<Short> defaultSupplier, boolean serializable, boolean sync, Authority authority, boolean copyOnDeath) {
-		return this.register(namespace, id, defaultSupplier, serializable ? Codec.SHORT : null, sync ? ByteBufCodecs.SHORT : null, authority, copyOnDeath);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, boolean serializable, boolean syncable, Authority authority, boolean copyOnDeath) {
+		return this.register(targetClass, ResourceLocation.fromNamespaceAndPath(namespace, id), defaultSupplier, serializable, syncable, authority, copyOnDeath);
 	}
 
-	public ResourceLocation registerShort(String namespace, String id, Supplier<Short> defaultSupplier, boolean serializable, boolean sync, boolean copyOnDeath) {
-		return this.registerShort(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, copyOnDeath);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, boolean serializable, boolean syncable, boolean copyOnDeath) {
+		return this.register(targetClass, namespace, id, defaultSupplier, serializable, syncable, Authority.SHARED, copyOnDeath);
 	}
 
-	public ResourceLocation registerShort(String namespace, String id, Supplier<Short> defaultSupplier, boolean serializable, boolean sync, Authority authority) {
-		return this.registerShort(namespace, id, defaultSupplier, serializable, sync, authority, true);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, boolean serializable, boolean syncable, Authority authority) {
+		return this.register(targetClass, namespace, id, defaultSupplier, serializable, syncable, authority, true);
 	}
 
-	public ResourceLocation registerShort(String namespace, String id, Supplier<Short> defaultSupplier, boolean serializable, boolean sync) {
-		return this.registerShort(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, true);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, Supplier<T> defaultSupplier, boolean serializable, boolean syncable) {
+		return this.register(targetClass, namespace, id, defaultSupplier, serializable, syncable, Authority.SHARED, true);
 	}
 
-	// LONG
-	public ResourceLocation registerLong(String namespace, String id, Supplier<Long> defaultSupplier, boolean serializable, boolean sync, Authority authority, boolean copyOnDeath) {
-		return this.register(namespace, id, defaultSupplier, serializable ? Codec.LONG : null, sync ? ByteBufCodecs.LONG : null, authority, copyOnDeath);
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, boolean serializable, boolean syncable, Authority authority, boolean copyOnDeath) {
+		return this.register(targetClass, location, null, serializable, syncable, authority, copyOnDeath);
 	}
 
-	public ResourceLocation registerLong(String namespace, String id, Supplier<Long> defaultSupplier, boolean serializable, boolean sync, boolean copyOnDeath) {
-		return this.registerLong(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, copyOnDeath);
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, boolean serializable, boolean syncable, boolean copyOnDeath) {
+		return this.register(targetClass, location, serializable, syncable, Authority.SHARED, copyOnDeath);
 	}
 
-	public ResourceLocation registerLong(String namespace, String id, Supplier<Long> defaultSupplier, boolean serializable, boolean sync, Authority authority) {
-		return this.registerLong(namespace, id, defaultSupplier, serializable, sync, authority, true);
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, boolean serializable, boolean syncable, Authority authority) {
+		return this.register(targetClass, location, serializable, syncable, authority, true);
 	}
 
-	public ResourceLocation registerLong(String namespace, String id, Supplier<Long> defaultSupplier, boolean serializable, boolean sync) {
-		return this.registerLong(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, true);
+	public <T> boolean register(Class<T> targetClass, ResourceLocation location, boolean serializable, boolean syncable) {
+		return this.register(targetClass, location, serializable, syncable, Authority.SHARED, true);
 	}
 
-	// INTEGER
-	public ResourceLocation registerInt(String namespace, String id, Supplier<Integer> defaultSupplier, boolean serializable, boolean sync, Authority authority, boolean copyOnDeath) {
-		return this.register(namespace, id, defaultSupplier, serializable ? Codec.INT : null, sync ? ByteBufCodecs.INT : null, authority, copyOnDeath);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, boolean serializable, boolean syncable, Authority authority, boolean copyOnDeath) {
+		return this.register(targetClass, ResourceLocation.fromNamespaceAndPath(namespace, id), serializable, syncable, authority, copyOnDeath);
 	}
 
-	public ResourceLocation registerInt(String namespace, String id, Supplier<Integer> defaultSupplier, boolean serializable, boolean sync, boolean copyOnDeath) {
-		return this.registerInt(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, copyOnDeath);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, boolean serializable, boolean syncable, boolean copyOnDeath) {
+		return this.register(targetClass, namespace, id, serializable, syncable, Authority.SHARED, copyOnDeath);
 	}
 
-	public ResourceLocation registerInt(String namespace, String id, Supplier<Integer> defaultSupplier, boolean serializable, boolean sync, Authority authority) {
-		return this.registerInt(namespace, id, defaultSupplier, serializable, sync, authority, true);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, boolean serializable, boolean syncable, Authority authority) {
+		return this.register(targetClass, namespace, id, serializable, syncable, authority, true);
 	}
 
-	public ResourceLocation registerInt(String namespace, String id, Supplier<Integer> defaultSupplier, boolean serializable, boolean sync) {
-		return this.registerInt(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, true);
-	}
-
-	// FLOAT
-	public ResourceLocation registerFloat(String namespace, String id, Supplier<Float> defaultSupplier, boolean serializable, boolean sync, Authority authority, boolean copyOnDeath) {
-		return this.register(namespace, id, defaultSupplier, serializable ? Codec.FLOAT : null, sync ? ByteBufCodecs.FLOAT : null, authority, copyOnDeath);
-	}
-
-	public ResourceLocation registerFloat(String namespace, String id, Supplier<Float> defaultSupplier, boolean serializable, boolean sync, boolean copyOnDeath) {
-		return this.registerFloat(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, copyOnDeath);
-	}
-
-	public ResourceLocation registerFloat(String namespace, String id, Supplier<Float> defaultSupplier, boolean serializable, boolean sync, Authority authority) {
-		return this.registerFloat(namespace, id, defaultSupplier, serializable, sync, authority, true);
-	}
-
-	public ResourceLocation registerFloat(String namespace, String id, Supplier<Float> defaultSupplier, boolean serializable, boolean sync) {
-		return this.registerFloat(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, true);
-	}
-
-	// DOUBLE
-	public ResourceLocation registerDouble(String namespace, String id, Supplier<Double> defaultSupplier, boolean serializable, boolean sync, Authority authority, boolean copyOnDeath) {
-		return this.register(namespace, id, defaultSupplier, serializable ? Codec.DOUBLE : null, sync ? ByteBufCodecs.DOUBLE : null, authority, copyOnDeath);
-	}
-
-	public ResourceLocation registerDouble(String namespace, String id, Supplier<Double> defaultSupplier, boolean serializable, boolean sync, boolean copyOnDeath) {
-		return this.registerDouble(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, copyOnDeath);
-	}
-
-	public ResourceLocation registerDouble(String namespace, String id, Supplier<Double> defaultSupplier, boolean serializable, boolean sync, Authority authority) {
-		return this.registerDouble(namespace, id, defaultSupplier, serializable, sync, authority, true);
-	}
-
-	public ResourceLocation registerDouble(String namespace, String id, Supplier<Double> defaultSupplier, boolean serializable, boolean sync) {
-		return this.registerDouble(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, true);
-	}
-
-	// STRING
-	public ResourceLocation registerString(String namespace, String id, Supplier<String> defaultSupplier, boolean serializable, boolean sync, Authority authority, boolean copyOnDeath) {
-		return this.register(namespace, id, defaultSupplier, serializable ? Codec.STRING : null, sync ? ByteBufCodecs.STRING_UTF8 : null, authority, copyOnDeath);
-	}
-
-	public ResourceLocation registerString(String namespace, String id, Supplier<String> defaultSupplier, boolean serializable, boolean sync, boolean copyOnDeath) {
-		return this.registerString(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, copyOnDeath);
-	}
-
-	public ResourceLocation registerString(String namespace, String id, Supplier<String> defaultSupplier, boolean serializable, boolean sync, Authority authority) {
-		return this.registerString(namespace, id, defaultSupplier, serializable, sync, authority, true);
-	}
-
-	public ResourceLocation registerString(String namespace, String id, Supplier<String> defaultSupplier, boolean serializable, boolean sync) {
-		return this.registerString(namespace, id, defaultSupplier, serializable, sync, Authority.SHARED, true);
+	public <T> boolean register(Class<T> targetClass, String namespace, String id, boolean serializable, boolean syncable) {
+		return this.register(targetClass, namespace, id, serializable, syncable, Authority.SHARED, true);
 	}
 }
